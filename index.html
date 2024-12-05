@@ -3,161 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Prayer Timings</title>
+    <title>Salah Timings</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
         }
-
         h1 {
             text-align: center;
-            color: #2c3e50;
+            margin-top: 20px;
+            font-size: 36px;
         }
-
-        /* Calendar Styling */
-        .calendar {
-            display: flex;
-            justify-content: space-between;
-            margin: 20px;
+        .header {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 20px;
         }
-
-        /* Table Styling */
         table {
-            width: 100%;
+            width: 90%;
+            margin: 0 auto;
             border-collapse: collapse;
-            margin: 20px auto;
-            font-family: 'Arial', sans-serif;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
         th, td {
-            padding: 12px;
+            padding: 10px 15px;
             text-align: center;
             border: 1px solid #ddd;
         }
-
         th {
             background-color: #3498db;
             color: white;
         }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
+        td {
+            font-size: 16px;
         }
-
-        /* Highlighting Current Time */
         .highlight {
-            background-color: #ffeb3b;
-            font-weight: bold;
+            background-color: #f39c12;
+            color: white;
         }
-
-        /* Jummah Prayer Time */
         .jummah {
-            text-align: center;
-            font-size: 20px;
-            margin-top: 20px;
-            font-weight: bold;
-            color: #e74c3c;
+            background-color: #2ecc71;
+            color: white;
         }
-
-        /* Error Message */
-        .error {
-            color: red;
-            text-align: center;
-            font-weight: bold;
+        .time-column {
+            width: 20%;
+        }
+        .date-column {
+            width: 30%;
+        }
+        .iqamah {
+            background-color: #f39c12;
         }
     </style>
 </head>
 <body>
 
-<h1>Prayer Timings for the Year</h1>
+    <h1>Salah Timings</h1>
+    <div class="header">
+        <p id="gregorian-date"></p>
+        <p id="hijri-date"></p>
+    </div>
 
-<!-- Display Gregorian and Hijri Date -->
-<div class="calendar">
-    <div id="gregorianDate"></div>
-    <div id="hijriDate"></div>
-</div>
-
-<!-- Prayer Timings Table -->
-<table id="prayerTimes">
-    <thead>
+    <table>
         <tr>
-            <th>Day</th>
-            <th>Fajr</th>
-            <th>Sunrise</th>
-            <th>Dhuhr</th>
-            <th>Asr</th>
-            <th>Maghrib</th>
-            <th>Isha</th>
+            <th>PRAYER</th>
+            <th>ATHAN</th>
+            <th>IQAMAH</th>
         </tr>
-    </thead>
-    <tbody>
-        <!-- Data will be populated by JavaScript -->
-    </tbody>
-</table>
+        <tr id="fajr">
+            <td>Fajr</td>
+            <td id="fajr-athan"></td>
+            <td id="fajr-iqamah"></td>
+        </tr>
+        <tr id="sunrise">
+            <td>Sunrise</td>
+            <td id="sunrise-athan"></td>
+            <td id="sunrise-iqamah"></td>
+        </tr>
+        <tr id="zuhr">
+            <td>Zuhr</td>
+            <td id="zuhr-athan"></td>
+            <td id="zuhr-iqamah"></td>
+        </tr>
+        <tr id="asr">
+            <td>Asr</td>
+            <td id="asr-athan"></td>
+            <td id="asr-iqamah"></td>
+        </tr>
+        <tr id="maghrib">
+            <td>Maghrib</td>
+            <td id="maghrib-athan"></td>
+            <td id="maghrib-iqamah"></td>
+        </tr>
+        <tr id="isha">
+            <td>Isha</td>
+            <td id="isha-athan"></td>
+            <td id="isha-iqamah"></td>
+        </tr>
+        <tr class="jummah">
+            <td>Jummah</td>
+            <td>12:30 PM</td>
+            <td>12:30 PM</td>
+        </tr>
+    </table>
 
-<!-- Jummah Prayer Time -->
-<div class="jummah">Jummah Prayer Time: 12:30 PM</div>
+    <script>
+        // Fetch the current date
+        const currentDate = new Date();
+        const gregorianDate = currentDate.toDateString();
+        document.getElementById('gregorian-date').innerText = "Gregorian Date: " + gregorianDate;
 
-<script>
-// Function to get today's Gregorian and Hijri dates
-function updateDates() {
-    const gregorianDate = new Date();
-    const hijriDate = new Intl.DateTimeFormat('en-GB-u-ca-islamic', { dateStyle: 'full' }).format(gregorianDate);
-    
-    // Display Gregorian and Hijri dates
-    document.getElementById('gregorianDate').innerHTML = `<strong>Gregorian: </strong>${gregorianDate.toLocaleDateString()} <strong>Day: </strong>${gregorianDate.toLocaleString('en-us', { weekday: 'long' })}`;
-    document.getElementById('hijriDate').innerHTML = `<strong>Hijri: </strong>${hijriDate}`;
-}
+        // For Hijri date, you would need a library or API (example: moment-hijri, or an API like Aladhan)
+        // You can fetch it via API or hardcode if needed. Here, let's assume it's hardcoded:
+        const hijriDate = "3 Jumādā ath-Thāniya 1446";
+        document.getElementById('hijri-date').innerText = "Hijri Date: " + hijriDate;
 
-// Example prayer times for the year (static for demo purposes, can be replaced with dynamic data)
-const prayerTimes = [
-    { date: "2024-12-06", fajr: "5:00 AM", sunrise: "6:30 AM", dhuhr: "12:00 PM", asr: "3:30 PM", maghrib: "5:45 PM", isha: "7:00 PM" },
-    { date: "2024-12-07", fajr: "5:01 AM", sunrise: "6:31 AM", dhuhr: "12:01 PM", asr: "3:31 PM", maghrib: "5:46 PM", isha: "7:01 PM" },
-    // Add more rows for the entire year
-];
+        // CSV file link
+        const csvFileUrl = 'https://raw.githubusercontent.com/masjideaqsa01/csv-widget/refs/heads/main/data.csv';
 
-// Function to populate the prayer times table
-function updatePrayerTimes() {
-    const today = new Date().toLocaleDateString();
-    const tbody = document.getElementById('prayerTimes').getElementsByTagName('tbody')[0];
+        // Fetch the CSV data
+        fetch(csvFileUrl)
+            .then(response => response.text())
+            .then(data => {
+                const rows = data.split('\n');
+                const prayerTimes = {};
 
-    prayerTimes.forEach((prayer, index) => {
-        const row = tbody.insertRow();
-        row.insertCell(0).innerText = prayer.date;
-        row.insertCell(1).innerText = prayer.fajr;
-        row.insertCell(2).innerText = prayer.sunrise;
-        row.insertCell(3).innerText = prayer.dhuhr;
-        row.insertCell(4).innerText = prayer.asr;
-        row.insertCell(5).innerText = prayer.maghrib;
-        row.insertCell(6).innerText = prayer.isha;
+                // Parse the CSV data into a usable object
+                rows.forEach(row => {
+                    const cols = row.split(',');
+                    if (cols.length >= 8) {
+                        const prayer = cols[0].trim();
+                        prayerTimes[prayer] = {
+                            athan: cols[1].trim(),
+                            iqamah: ''
+                        };
+                    }
+                });
 
-        // Highlight the current prayer time based on today's date
-        if (prayer.date === today) {
-            row.classList.add('highlight');
+                // Set IQAMAH times (30 mins after Azan for all except Maghrib and Sunrise)
+                for (let prayer in prayerTimes) {
+                    if (prayer !== 'Sunrise' && prayer !== 'Maghrib') {
+                        prayerTimes[prayer].iqamah = addMinutes(prayerTimes[prayer].athan, 30);
+                    } else {
+                        prayerTimes[prayer].iqamah = prayerTimes[prayer].athan; // Maghrib is the same
+                    }
+                }
+
+                // Populate the table with prayer timings
+                Object.keys(prayerTimes).forEach(prayer => {
+                    if (prayer === 'Jummah') return; // Jummah is fixed
+                    document.getElementById(`${prayer.toLowerCase()}-athan`).innerText = prayerTimes[prayer].athan;
+                    document.getElementById(`${prayer.toLowerCase()}-iqamah`).innerText = prayerTimes[prayer].iqamah;
+                });
+
+                // Highlight the current prayer based on the current time
+                highlightCurrentPrayer();
+
+            })
+            .catch(error => console.error('Error fetching CSV data:', error));
+
+        // Add minutes to a time string (for IQAMAH)
+        function addMinutes(time, minutesToAdd) {
+            const timeParts = time.split(':');
+            const date = new Date(0, 0, 0, parseInt(timeParts[0]), parseInt(timeParts[1]));
+            date.setMinutes(date.getMinutes() + minutesToAdd);
+            return `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
         }
-    });
-}
 
-// Function to update prayer times dynamically every day
-function updateDailyPrayer() {
-    const currentTime = new Date();
-    const prayerTimeElements = document.querySelectorAll('#prayerTimes tbody tr');
+        // Function to highlight the current prayer
+        function highlightCurrentPrayer() {
+            const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    prayerTimeElements.forEach((row) => {
-        const prayerDate = row.cells[0].innerText;
-        if (prayerDate === currentTime.toLocaleDateString()) {
-            row.classList.add('highlight');
+            const prayers = ['Fajr', 'Zuhr', 'Asr', 'Maghrib', 'Isha'];
+            prayers.forEach(prayer => {
+                const athanTime = document.getElementById(`${prayer.toLowerCase()}-athan`).innerText;
+                const iqamahTime = document.getElementById(`${prayer.toLowerCase()}-iqamah`).innerText;
+
+                // Check if current time matches the prayer time (either Azan or Iqamah)
+                if (currentTime === athanTime || currentTime === iqamahTime) {
+                    document.getElementById(prayer.toLowerCase()).classList.add('highlight');
+                }
+            });
         }
-    });
-}
-
-// Initialize the page with current date and prayer times
-updateDates();
-updatePrayerTimes();
-updateDailyPrayer();
-</script>
-
+    </script>
 </body>
 </html>
