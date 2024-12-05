@@ -1,62 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>CSV Data Viewer</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
-    }
-    th {
-      background-color: #f4f4f4;
-    }
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Data Viewer</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
-  <h1>CSV Data Viewer</h1>
-  <div id="data"></div>
-  <script>
-    const csvUrl = "https://raw.githubusercontent.com/masjideaqsa01/csv-widget/refs/heads/main/data.csv";
+    <h1>CSV Data Viewer</h1>
+    <table id="csvTable">
+        <thead>
+            <tr>
+                <th>Loading...</th>
+            </tr>
+        </thead>
+    </table>
 
-    // Fetch and parse the CSV file
-    fetch(csvUrl)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch the CSV file.");
-        }
-        return response.text();
-      })
-      .then((data) => {
-        const results = Papa.parse(data, { header: true });
-        const container = document.getElementById("data");
-        const table = document.createElement("table");
-        table.border = "1";
+    <script>
+        // URL of the raw CSV file in your GitHub repo
+        const csvUrl = 'https://raw.githubusercontent.com/masjideaqsa01/csv-widget/main/data.csv';
 
-        // Create table headers
-        const headers = Object.keys(results.data[0]);
-        const headerRow = document.createElement("tr");
-        headers.forEach((header) => {
-          const th = document.createElement("th");
-          th.textContent = header;
-          headerRow.appendChild(th);
-        });
-        table.appendChild(headerRow);
+        // Fetch CSV data
+        fetch(csvUrl)
+            .then(response => response.text())
+            .then(data => {
+                const rows = data.split("\n").map(row => row.split(","));
+                let table = document.getElementById("csvTable");
 
-        // Populate table rows
-        results.data.forEach((row) => {
-          const tr = document.createElement("tr");
-          headers.forEac
+                // Populate the table
+                rows.forEach((row, rowIndex) => {
+                    let tr = document.createElement("tr");
+                    row.forEach((cell, cellIndex) => {
+                        let td = document.createElement(rowIndex === 0 ? "th" : "td");
+                        td.textContent = cell.trim();
+                        tr.appendChild(td);
+                    });
+                    table.appendChild(tr);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading CSV:', error);
+                document.getElementById("csvTable").innerHTML = "<tr><td>Error loading CSV</td></tr>";
+            });
+    </script>
+</body>
+</html>
