@@ -11,52 +11,59 @@
             padding: 0;
             background-color: #f7f7f7;
         }
+
         h1 {
             text-align: center;
             margin-top: 20px;
             font-size: 36px;
+            color: #34495e;
         }
+
         .header {
             text-align: center;
             font-size: 18px;
             margin-bottom: 20px;
+            color: #2c3e50;
         }
+
         table {
-            width: 90%;
+            width: 80%;
             margin: 0 auto;
             border-collapse: collapse;
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         th, td {
-            padding: 10px 15px;
+            padding: 15px 20px;
             text-align: center;
             border: 1px solid #ddd;
         }
+
         th {
             background-color: #3498db;
             color: white;
+            font-size: 18px;
         }
+
         td {
             font-size: 16px;
         }
+
         .highlight {
-            background-color: #f39c12;
-            color: white;
-        }
-        .jummah {
             background-color: #2ecc71;
             color: white;
         }
-        .time-column {
-            width: 20%;
+
+        .current-prayer {
+            background-color: #f1c40f;
+            color: white;
         }
-        .date-column {
-            width: 30%;
-        }
-        .iqamah {
-            background-color: #f39c12;
+
+        .jummah-row {
+            background-color: #2ecc71;
+            color: white;
         }
     </style>
 </head>
@@ -68,147 +75,139 @@
         <p id="hijri-date"></p>
     </div>
 
-    <table>
-        <tr>
-            <th>PRAYER</th>
-            <th>ATHAN</th>
-            <th>IQAMAH</th>
-        </tr>
-        <tr id="fajr">
-            <td>Fajr</td>
-            <td id="fajr-athan"></td>
-            <td id="fajr-iqamah"></td>
-        </tr>
-        <tr id="sunrise">
-            <td>Sunrise</td>
-            <td id="sunrise-athan"></td>
-            <td id="sunrise-iqamah"></td>
-        </tr>
-        <tr id="zuhr">
-            <td>Zuhr</td>
-            <td id="zuhr-athan"></td>
-            <td id="zuhr-iqamah"></td>
-        </tr>
-        <tr id="asr">
-            <td>Asr</td>
-            <td id="asr-athan"></td>
-            <td id="asr-iqamah"></td>
-        </tr>
-        <tr id="maghrib">
-            <td>Maghrib</td>
-            <td id="maghrib-athan"></td>
-            <td id="maghrib-iqamah"></td>
-        </tr>
-        <tr id="isha">
-            <td>Isha</td>
-            <td id="isha-athan"></td>
-            <td id="isha-iqamah"></td>
-        </tr>
-        <tr class="jummah">
-            <td>Jummah</td>
-            <td>12:30 PM</td>
-            <td>12:30 PM</td>
-        </tr>
+    <table id="prayer-table">
+        <thead>
+            <tr>
+                <th>PRAYER</th>
+                <th>ATHAN</th>
+                <th>IQAMAH</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr id="fajr">
+                <td>Fajr</td>
+                <td id="fajr-athan"></td>
+                <td id="fajr-iqamah"></td>
+            </tr>
+            <tr id="sunrise">
+                <td>Sunrise</td>
+                <td id="sunrise-athan"></td>
+                <td></td>
+            </tr>
+            <tr id="zuhr">
+                <td>Zuhr</td>
+                <td id="zuhr-athan"></td>
+                <td id="zuhr-iqamah"></td>
+            </tr>
+            <tr id="asr">
+                <td>Asr</td>
+                <td id="asr-athan"></td>
+                <td id="asr-iqamah"></td>
+            </tr>
+            <tr id="maghrib">
+                <td>Maghrib</td>
+                <td id="maghrib-athan"></td>
+                <td id="maghrib-iqamah"></td>
+            </tr>
+            <tr id="isha">
+                <td>Isha</td>
+                <td id="isha-athan"></td>
+                <td id="isha-iqamah"></td>
+            </tr>
+            <tr class="jummah-row">
+                <td>Jummah</td>
+                <td>12:30 PM</td>
+                <td>12:30 PM</td>
+            </tr>
+        </tbody>
     </table>
 
-
-    
     <script>
-    // URL of your CSV data in GitHub raw format
-    const csvUrl = "https://raw.githubusercontent.com/masjideaqsa01/csv-widget/refs/heads/main/data.csv";
+        // Raw URL of your CSV data in GitHub
+        const csvUrl = "https://raw.githubusercontent.com/masjideaqsa01/csv-widget/main/data.csv";
 
-    fetch(csvUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Failed to fetch CSV data");
-            }
-            return response.text();
-        })
-        .then(csv => {
-            const rows = csv.split('\n').map(row => row.split(','));
-            const table = document.getElementById("prayer-times");
-            const dateRow = document.getElementById("current-date");
-            
-            // Header row for the table
-            table.innerHTML = `
-                <tr>
-                    <th>PRAYER</th>
-                    <th>ATHAN</th>
-                    <th>IQAMAH</th>
-                </tr>
-            `;
-
-            // Fill the table with prayer times from the CSV data
-            rows.forEach((row, index) => {
-                if (index === 0) return;  // Skip the header row of the CSV
-
-                const date = new Date(row[0]);
-                const day = date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                const hijriDate = `3 Jumādā ath-Thāniya 1446`; // Replace with dynamic Hijri date if needed
-
-                // Update the current date section in the header
-                if (index === 1) {
-                    dateRow.innerHTML = `
-                        <div><h3>Salah Timings</h3></div>
-                        <div>${day} | ${hijriDate}</div>
-                    `;
+        // Fetch and populate Salah timings
+        fetch(csvUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to fetch CSV data");
+                }
+                return response.text();
+            })
+            .then(csv => {
+                const rows = csv.split("\n").map(row => row.split(","));
+                if (rows.length < 1) {
+                    throw new Error("CSV is empty or invalid");
                 }
 
-                // Timings calculation for iqamah (adding 30 minutes to adhan time, except for Maghrib and Sunrise)
-                const iqamahTimes = row.slice(1).map((time, idx) => {
-                    if (time.trim() === "" || idx === 1) return "";  // Skip Sunrise and keep Maghrib as adhan time
-                    const prayerTime = new Date(`2024-12-06T${time.trim()}:00`);
-                    if (idx === 4) return time.trim(); // Maghrib, no change
-                    prayerTime.setMinutes(prayerTime.getMinutes() + 30);
-                    return prayerTime.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+                const prayerTimings = {};
+
+                rows.forEach((row, index) => {
+                    if (index === 0) return; // Skip header row
+
+                    const prayer = row[0].trim().toLowerCase(); // Prayer name
+                    const athanTime = row[1].trim(); // Adhan time
+                    const iqamahTime =
+                        prayer !== "maghrib" && prayer !== "sunrise"
+                            ? addMinutes(athanTime, 30) // Add 30 minutes for Iqamah
+                            : athanTime; // No change for Maghrib and empty for Sunrise
+
+                    prayerTimings[prayer] = { athan: athanTime, iqamah: iqamahTime };
                 });
 
-                // Populate the table row
-                table.innerHTML += `
-                    <tr>
-                        <td>Fajr</td>
-                        <td>${row[1]}</td>
-                        <td>${iqamahTimes[0]}</td>
-                    </tr>
-                    <tr>
-                        <td>Sunrise</td>
-                        <td>${row[2]}</td>
-                        <td></td> <!-- Sunrise has no iqamah -->
-                    </tr>
-                    <tr>
-                        <td>Zuhr</td>
-                        <td>${row[3]}</td>
-                        <td>${iqamahTimes[1]}</td>
-                    </tr>
-                    <tr>
-                        <td>Asr</td>
-                        <td>${row[4]}</td>
-                        <td>${iqamahTimes[2]}</td>
-                    </tr>
-                    <tr>
-                        <td>Maghrib</td>
-                        <td>${row[5]}</td>
-                        <td>${iqamahTimes[3]}</td>
-                    </tr>
-                    <tr>
-                        <td>Isha</td>
-                        <td>${row[6]}</td>
-                        <td>${iqamahTimes[4]}</td>
-                    </tr>
-                    <tr>
-                        <td>Jummah</td>
-                        <td>12:30 PM</td>
-                        <td>12:30 PM</td>
-                    </tr>
-                `;
+                // Populate table with fetched timings
+                Object.keys(prayerTimings).forEach(prayer => {
+                    const athanCell = document.getElementById(`${prayer}-athan`);
+                    const iqamahCell = document.getElementById(`${prayer}-iqamah`);
+                    if (athanCell) athanCell.textContent = prayerTimings[prayer].athan || "N/A";
+                    if (iqamahCell) iqamahCell.textContent = prayerTimings[prayer].iqamah || "N/A";
+                });
+
+                // Highlight the current/next prayer
+                highlightNextPrayer(prayerTimings);
+            })
+            .catch(error => {
+                console.error("Error fetching data:", error);
+                alert("Failed to load Salah timings.");
             });
-        })
-        .catch(error => {
-            console.error("Error fetching or parsing CSV data:", error);
-            alert("An error occurred while fetching or processing the CSV data.");
-        });
-</script>
 
+        // Highlight the next prayer based on current time
+        function highlightNextPrayer(prayerTimings) {
+            const now = new Date();
+            const times = [];
 
+            Object.keys(prayerTimings).forEach(prayer => {
+                const athanTime = prayerTimings[prayer].athan;
+                if (athanTime) {
+                    const prayerDate = new Date();
+                    const [hours, minutes] = athanTime.split(":");
+                    prayerDate.setHours(hours % 12 + (athanTime.includes("PM") ? 12 : 0), minutes, 0);
+                    times.push({ prayer, time: prayerDate });
+                }
+            });
+
+            times.sort((a, b) => a.time - b.time);
+
+            for (let i = 0; i < times.length; i++) {
+                if (now < times[i].time) {
+                    document.getElementById(times[i].prayer).classList.add("highlight");
+                    break;
+                }
+            }
+        }
+
+        // Utility function to add minutes to a time string
+        function addMinutes(time, minutesToAdd) {
+            const [hours, minutes] = time.split(":").map(Number);
+            const date = new Date();
+            date.setHours(hours, minutes + minutesToAdd, 0);
+            return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: true });
+        }
+
+        // Update Gregorian and Hijri dates
+        const today = new Date();
+        document.getElementById("gregorian-date").textContent = today.toDateString();
+        document.getElementById("hijri-date").textContent = "3 Jumādā ath-Thāniya 1446"; // Update this dynamically if needed
+    </script>
 </body>
 </html>
