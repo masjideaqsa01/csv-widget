@@ -96,7 +96,7 @@
                     const row = document.createElement("tr");
                     row.innerHTML = `
                         <td>${prayer}</td>
-                        <td>${adhanTime}</td>
+                        <td>${adhanTime || ""}</td>
                     `;
                     prayerTable.appendChild(row);
                 });
