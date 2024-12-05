@@ -3,57 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSV Data Viewer</title>
+    <title>Dynamic Prayer Timings</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        /* Calendar Styling */
+        .calendar {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px;
+        }
+
+        /* Table Styling */
         table {
             width: 100%;
             border-collapse: collapse;
+            margin: 20px auto;
+            font-family: 'Arial', sans-serif;
         }
-        table, th, td {
-            border: 1px solid black;
-        }
+
         th, td {
-            padding: 8px;
-            text-align: left;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Highlighting Current Time */
+        .highlight {
+            background-color: #ffeb3b;
+            font-weight: bold;
+        }
+
+        /* Jummah Prayer Time */
+        .jummah {
+            text-align: center;
+            font-size: 20px;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        /* Error Message */
+        .error {
+            color: red;
+            text-align: center;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h1>CSV Data Viewer</h1>
-    <table id="csvTable">
-        <thead>
-            <tr>
-                <th>Loading...</th>
-            </tr>
-        </thead>
-    </table>
 
-    <script>
-        // URL of the raw CSV file in your GitHub repo
-        const csvUrl = 'https://raw.githubusercontent.com/masjideaqsa01/csv-widget/main/data.csv';
+<h1>Prayer Timings for the Year</h1>
 
-        // Fetch CSV data
-        fetch(csvUrl)
-            .then(response => response.text())
-            .then(data => {
-                const rows = data.split("\n").map(row => row.split(","));
-                let table = document.getElementById("csvTable");
+<!-- Display Gregorian and Hijri Date -->
+<div class="calendar">
+    <div id="gregorianDate"></div>
+    <div id="hijriDate"></div>
+</div>
 
-                // Populate the table
-                rows.forEach((row, rowIndex) => {
-                    let tr = document.createElement("tr");
-                    row.forEach((cell, cellIndex) => {
-                        let td = document.createElement(rowIndex === 0 ? "th" : "td");
-                        td.textContent = cell.trim();
-                        tr.appendChild(td);
-                    });
-                    table.appendChild(tr);
-                });
-            })
-            .catch(error => {
-                console.error('Error loading CSV:', error);
-                document.getElementById("csvTable").innerHTML = "<tr><td>Error loading CSV</td></tr>";
-            });
-    </script>
+<!-- Prayer Timings Table -->
+<table id="prayerTimes">
+    <thead>
+        <tr>
+            <th>Day</th>
+            <th>Fajr</th>
+            <th>Sunrise</th>
+            <th>Dhuhr</th>
+            <th>Asr</th>
+            <th>Maghrib</th>
+            <th>Isha</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Data will be populated by JavaScript -->
+    </tbody>
+</table>
+
+<!-- Jummah Prayer Time -->
+<div class="jummah">Jummah Prayer Time: 12:30 PM</div>
+
+<script>
+// Function to get today's Gregorian and Hijri dates
+function updateDates() {
+    const gregorianDate = new Date();
+    const hijriDate = new Intl.DateTimeFormat('en-GB-u-ca-islamic', { dateStyle: 'full' }).format(gregorianDate);
+    
+    // Display Gregorian and Hijri dates
+    document.getElementById('gregorianDate').innerHTML = `<strong>Gregorian: </strong>${gregorianDate.toLocaleDateString()} <strong>Day: </strong>${gregorianDate.toLocaleString('en-us', { weekday: 'long' })}`;
+    document.getElementById('hijriDate').innerHTML = `<strong>Hijri: </strong>${hijriDate}`;
+}
+
+// Example prayer times for the year (static for demo purposes, can be replaced with dynamic data)
+const prayerTimes = [
+    { date: "2024-12-06", fajr: "5:00 AM", sunrise: "6:30 AM", dhuhr: "12:00 PM", asr: "3:30 PM", maghrib: "5:45 PM", isha: "7:00 PM" },
+    { date: "2024-12-07", fajr: "5:01 AM", sunrise: "6:31 AM", dhuhr: "12:01 PM", asr: "3:31 PM", maghrib: "5:46 PM", isha: "7:01 PM" },
+    // Add more rows for the entire year
+];
+
+// Function to populate the prayer times table
+function updatePrayerTimes() {
+    const today = new Date().toLocaleDateString();
+    const tbody = document.getElementById('prayerTimes').getElementsByTagName('tbody')[0];
+
+    prayerTimes.forEach((prayer, index) => {
+        const row = tbody.insertRow();
+        row.insertCell(0).innerText = prayer.date;
+        row.insertCell(1).innerText = prayer.fajr;
+        row.insertCell(2).innerText = prayer.sunrise;
+        row.insertCell(3).innerText = prayer.dhuhr;
+        row.insertCell(4).innerText = prayer.asr;
+        row.insertCell(5).innerText = prayer.maghrib;
+        row.insertCell(6).innerText = prayer.isha;
+
+        // Highlight the current prayer time based on today's date
+        if (prayer.date === today) {
+            row.classList.add('highlight');
+        }
+    });
+}
+
+// Function to update prayer times dynamically every day
+function updateDailyPrayer() {
+    const currentTime = new Date();
+    const prayerTimeElements = document.querySelectorAll('#prayerTimes tbody tr');
+
+    prayerTimeElements.forEach((row) => {
+        const prayerDate = row.cells[0].innerText;
+        if (prayerDate === currentTime.toLocaleDateString()) {
+            row.classList.add('highlight');
+        }
+    });
+}
+
+// Initialize the page with current date and prayer times
+updateDates();
+updatePrayerTimes();
+updateDailyPrayer();
+</script>
+
 </body>
 </html>
