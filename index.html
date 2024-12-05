@@ -1,97 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSV Data Viewer</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/papaparse/5.4.0/papaparse.min.js"></script>
-    <style>
-        body {
-            padding: 20px;
-            font-family: Arial, sans-serif;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-    </style>
+  <title>CSV Data Viewer</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+  </style>
 </head>
 <body>
-    <h1>CSV Data Viewer</h1>
-    <div id="data-table" class="table-responsive">
-        <p>Loading data, please wait...</p>
-    </div>
-    <script>
-        // CSV File URL
-        const fileUrl = "https://drive.google.com/uc?export=download&id=1bjfo2o0JpYNuZjrnd_90u4YWEY4nuOrz";
+  <h1>CSV Data Viewer</h1>
+  <div id="data"></div>
+  <script>
+    const csvUrl = "https://raw.githubusercontent.com/masjideaqsa01/csv-widget/refs/heads/main/data.csv";
 
-        // Fetch and parse CSV
-        fetch(fileUrl)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Failed to fetch the CSV file");
-                }
-                return response.text();
-            })
-            .then(csvText => {
-                Papa.parse(csvText, {
-                    header: true,
-                    complete: function(results) {
-                        displayTable(results.data);
-                    },
-                    error: function(error) {
-                        document.getElementById("data-table").innerHTML = `<p>Error loading data: ${error.message}</p>`;
-                    }
-                });
-            })
-            .catch(error => {
-                document.getElementById("data-table").innerHTML = `<p>Error: ${error.message}</p>`;
-            });
-
-        // Render Table
-        function displayTable(data) {
-            if (data.length === 0) {
-                document.getElementById("data-table").innerHTML = "<p>No data found in the CSV file.</p>";
-                return;
-            }
-
-            const table = document.createElement("table");
-            table.classList.add("table", "table-striped");
-
-            // Create table headers
-            const thead = table.createTHead();
-            const headerRow = thead.insertRow();
-            Object.keys(data[0]).forEach(key => {
-                const th = document.createElement("th");
-                th.textContent = key;
-                headerRow.appendChild(th);
-            });
-
-            // Create table body
-            const tbody = table.createTBody();
-            data.forEach(row => {
-                const tr = tbody.insertRow();
-                Object.values(row).forEach(cellValue => {
-                    const td = tr.insertCell();
-                    td.textContent = cellValue;
-                });
-            });
-
-            // Append table to the container
-            const container = document.getElementById("data-table");
-            container.innerHTML = ""; // Clear loading message
-            container.appendChild(table);
+    // Fetch and parse the CSV file
+    fetch(csvUrl)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch the CSV file.");
         }
-    </script>
-</body>
-</html>
+        return response.text();
+      })
+      .then((data) => {
+        const results = Papa.parse(data, { header: true });
+        const container = document.getElementById("data");
+        const table = document.createElement("table");
+        table.border = "1";
+
+        // Create table headers
+        const headers = Object.keys(results.data[0]);
+        const headerRow = document.createElement("tr");
+        headers.forEach((header) => {
+          const th = document.createElement("th");
+          th.textContent = header;
+          headerRow.appendChild(th);
+        });
+        table.appendChild(headerRow);
+
+        // Populate table rows
+        results.data.forEach((row) => {
+          const tr = document.createElement("tr");
+          headers.forEac
